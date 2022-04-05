@@ -17,7 +17,7 @@ app.use("/api", productRouter);
 app.use("/api", categoryRouter);
 app.use("/api", authRouter)
 // connect database
-mongoose.connect("mongodb://localhost:27017/we16306")
+mongoose.connect("mongodb://localhost:27017/Nodejs")
     .then(() => console.log("Connect db thanh cong"))
     .catch((error) => console.log(error))
 // Connect
