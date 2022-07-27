@@ -1,41 +1,64 @@
-import Category from "../models/category";
+import Category from '../models/category';
 import slugify from 'slugify';
-import Product from '../models/product';
+import Product from '../models/products';
 
-
-export const create = async (req, res ) => {  // create product
+export const create = async (req, res) => { // create product
     req.body.slug = slugify(req.body.name);
     try {
         const category = await new Category(req.body).save()
-        res.json(category);
+        res.json(category);    
     } catch (error) {
         res.status(400).json({
-            message: "Them danh muc khong thanh cong"
+            message: "Thêm danh mục không thành công"
+        })
+    }
+}
+export const listCate = async (req, res) => {
+    try {
+        const categorys = await Category.find().exec();
+        res.json(categorys);
+    } catch (error) {
+        res.status(400).json({
+            messsager: "thêm không thành công"
+        })
+    }   
+}
+export const removeCate = async (req, res) => { // delete 
+    // delete 
+    try {
+      const categorys = await Category.findOneAndDelete({
+        _id: req.params.id,
+      }).exec();
+      res.json(categorys);
+    } catch (error) {
+      res.status(400).json({
+        message: 'Xóa sản phẩm không thành công',
+      });
+    }
+  };
+export const read = async (req, res) => {
+    try {
+            const category = await Category.findOne({slug: req.params.slug}).exec();
+            const products = await Product.find({category: category}).populate('category').select('-category').exec();
+            res.json({
+                category, products
+            });
+    } catch (error) {
+        res.status(400).json({
+            messsager: "Lỗi"
         })
     }
 }
 
-export const list = async (req, res) => { //get all
-     try {
-         const categories = await Category.find().exec()
-     } catch (error) {
-         res.status(400).json({
-             message: " loi "
-         })
-     }
-}
-
-export const read = async (req, res) => {
-
+export const update = async (req, res) => {
+    const condistion = { _id: req.params.id };
+    const { name } = req.body;
     try {
-        const category = await Category.findOne({slug: req.params.slug}).exec();
-        const products = await Product.find({category: category}).populate('category').select('-category').exec()
-        res.json({
-            category, products
-        });
+        const category = await Category.findOneAndUpdate(condistion, { name })
+        res.status(200).json(category)
     } catch (error) {
-        res.status(400).json({
-            message: " loi"
+        res.status(401).json({
+            message: "Lỗi không update được "
         })
     }
 }
